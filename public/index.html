@@ -1,0 +1,2815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="siteTitle">Usually Blog</title>
+    <link rel="icon" id="siteFavicon" href="picture/head.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js">
+    </script>
+    <!-- 代码高亮 -->
+    <link rel="stylesheet" id="hljs-theme" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js">
+    </script>
+    <!-- 🆕 引入配置文件 -->
+    <script src="config.js">
+    </script>
+    <style>
+        /* ===== CSS 变量（主题切换） ===== */
+        :root {
+            --bg-image: url('picture/background1.jpg');
+            --bg-color: transparent;
+            --card-bg: rgba(255, 255, 255, 0.10);
+            --card-bg-solid: rgba(255, 255, 255, 0.10);
+            --text-color: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --tag-bg: rgba(255, 255, 255, 0.08);
+            --scrollbar-track: rgba(255, 255, 255, 0.05);
+            --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+            --hero-bg: rgba(255, 255, 255, 0.12);
+            --home-right-bg: rgba(255, 255, 255, 0.06);
+            --btn-bg: rgba(255, 255, 255, 0.08);
+            --btn-hover: rgba(255, 255, 255, 0.22);
+            --post-card-border: rgba(255, 255, 255, 0.12);
+            --login-bg: rgba(255, 255, 255, 0.08);
+            --zoom-bg: rgba(255, 255, 255, 0.10);
+            --divider-color: rgba(255, 255, 255, 0.08);
+            --file-item-bg: rgba(255, 255, 255, 0.04);
+        }
+
+        [data-theme="dark"] {
+            --bg-image: none;
+            --bg-color: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-bg-solid: rgba(30, 30, 50, 0.85);
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --tag-bg: rgba(255, 255, 255, 0.05);
+            --scrollbar-track: rgba(255, 255, 255, 0.02);
+            --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+            --hero-bg: rgba(255, 255, 255, 0.06);
+            --home-right-bg: rgba(255, 255, 255, 0.04);
+            --btn-bg: rgba(255, 255, 255, 0.06);
+            --btn-hover: rgba(255, 255, 255, 0.18);
+            --post-card-border: rgba(255, 255, 255, 0.06);
+            --login-bg: rgba(255, 255, 255, 0.05);
+            --zoom-bg: rgba(30, 30, 50, 0.9);
+            --divider-color: rgba(255, 255, 255, 0.06);
+            --file-item-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        /* ===== 重置 & 全局背景 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: var(--bg-color);
+            padding: 0;
+            transition: background-color 0.4s, color 0.4s;
+        }
+        [data-theme="dark"] body {
+            background-image: none;
+            background-color: #1a1a2e;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===== 滚动条 ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 8px;
+        }
+
+        /* ===== 毛玻璃通用 ===== */
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--shadow-color);
+            border-radius: 16px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s;
+        }
+        .glass:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px var(--shadow-color);
+        }
+
+        /* ===== 导航栏（固定顶部） ===== */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 1100px;
+            z-index: 100;
+            padding: 14px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 60px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            transition: transform 0.2s, background 0.3s;
+        }
+        .navbar:hover {
+            transform: translateX(-50%) scale(1.01);
+        }
+        .navbar .brand {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .navbar .brand span {
+            color: var(--text-secondary);
+        }
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .navbar .nav-links a {
+            font-size: 15px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+        .navbar .nav-links a:hover {
+            color: var(--text-color);
+            border-bottom-color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+        }
+        .navbar .nav-links a.active {
+            color: var(--text-color);
+            border-bottom-color: #fff;
+            font-weight: 500;
+        }
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 30px;
+            transition: transform 0.2s;
+            opacity: 0.8;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.15);
+            opacity: 1;
+        }
+
+        /* ===== 容器 ===== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        /* ===== 页面顶部内边距 ===== */
+        #page-about,
+        #page-admin,
+        #page-post,
+        #page-files {
+            padding-top: 90px;
+        }
+        #page-posts {
+            padding-top: 140px;
+        }
+
+        /* ===== 首页 ===== */
+        #page-home {
+            min-height: calc(100vh - 130px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 90px 0 40px;
+        }
+        .home-grid {
+            width: 100%;
+            max-width: 960px;
+            display: grid;
+            grid-template-columns: minmax(280px, 1.1fr) minmax(320px, 1fr);
+            gap: 28px;
+            align-items: start;
+            margin: 0 auto;
+        }
+
+        .hero {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            text-align: left;
+            color: var(--text-color);
+            padding: 28px 26px;
+            background: var(--hero-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 24px 60px var(--shadow-color);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-sizing: border-box;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .hero .avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            align-self: flex-start;
+            margin-bottom: 16px;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+        .hero .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .hero .avatar:hover {
+            transform: scale(1.05);
+        }
+        .hero h1 {
+            font-size: 44px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            text-align: left;
+            width: 100%;
+        }
+        .hero .subtitle {
+            font-size: 17px;
+            opacity: 0.9;
+            max-width: 100%;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            text-align: left;
+            width: 100%;
+            min-height: 2em;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .hero .typewriter-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.1em;
+            background: var(--text-color);
+            animation: blink 0.8s step-end infinite;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+        .hero .bio-text {
+            font-size: 16px;
+            max-width: 640px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            width: 100%;
+        }
+        .hero .scroll-hint {
+            margin-top: 14px;
+            font-size: 13px;
+            opacity: 0.6;
+            color: var(--text-secondary);
+            width: 100%;
+            text-align: left;
+        }
+
+        .home-right {
+            width: 100%;
+            height: 100%;
+            background: var(--home-right-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 20px 22px 16px 22px;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .home-right .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .home-right .section-title .badge {
+            font-size: 13px;
+            font-weight: 1000;
+            color: var(--text-secondary);
+            background: var(--tag-bg);
+            padding: 0 12px;
+            border-radius: 20px;
+        }
+        .home-right .section-divider {
+            border: none;
+            border-top: 1px solid var(--divider-color);
+            margin: 16px 0;
+        }
+
+        /* ===== 文章卡片 ===== */
+        .post-card {
+            background: transparent;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--post-card-border);
+            border-radius: 14px;
+            padding: 16px 22px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            box-shadow: 0 4px 20px var(--shadow-color);
+        }
+        .post-card:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .post-card .post-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+        }
+        .post-card .post-meta {
+            margin-top: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        .post-card .tag {
+            display: inline-block;
+            background: var(--tag-bg);
+            color: var(--text-secondary);
+            font-size: 11px;
+            padding: 1px 10px;
+            border-radius: 20px;
+        }
+        .post-card .post-summary {
+            margin-top: 6px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* ===== 底部模块 ===== */
+        .home-footer {
+            width: 100%;
+            max-width: 960px;
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .home-footer .footer-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 22px 26px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            transition: transform 0.25s, box-shadow 0.25s, background 0.3s;
+        }
+        .home-footer .footer-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 12px 40px var(--shadow-color);
+        }
+        .home-footer .footer-card .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+        .home-footer .footer-card .card-title .emoji {
+            margin-right: 8px;
+        }
+
+        .footer-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .footer-tags .tag-btn {
+            background: var(--tag-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 2px 14px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .footer-tags .tag-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .footer-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 28px;
+        }
+        .footer-stats .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .footer-stats .stat-item .num {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 18px;
+        }
+
+        /* ===== 🆕 优化后的友链样式（毛玻璃卡片按钮） ===== */
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-links .link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--btn-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            text-decoration: none;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            min-height: 34px;
+        }
+        .footer-links .link-btn:hover {
+            transform: scale(1.06);
+            background: var(--btn-hover);
+            color: var(--text-color);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+        .footer-links .link-btn:active {
+            transform: scale(0.96);
+        }
+        .footer-links .link-btn .emoji {
+            font-size: 14px;
+        }
+
+        /* ===== 社交链接（约等） ===== */
+        .about-links {
+            margin-top: 8px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .about-link-card {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 18px;
+            min-height: 34px;
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--btn-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            text-decoration: none;
+            transition: transform 0.2s ease, background 0.2s ease;
+            cursor: pointer;
+            flex: 0 1 auto;
+            min-width: 60px;
+        }
+        .about-link-card:hover {
+            transform: scale(1.06);
+            background: var(--btn-hover);
+            color: var(--text-color);
+        }
+        .about-link-card:active {
+            transform: scale(0.96);
+        }
+        .about-link-github {
+            background: rgba(40, 40, 50, 0.35);
+        }
+        .about-link-github:hover {
+            background: rgba(40, 40, 50, 0.60);
+        }
+        .about-link-twitter {
+            background: rgba(29, 161, 242, 0.25);
+        }
+        .about-link-twitter:hover {
+            background: rgba(29, 161, 242, 0.50);
+        }
+        .about-link-bilibili {
+            background: rgba(234, 123, 188, 0.25);
+        }
+        .about-link-bilibili:hover {
+            background: rgba(234, 123, 188, 0.50);
+        }
+
+        /* ===== 卡片（其他页面） ===== */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            transition: transform 0.25s, box-shadow 0.25s, background 0.3s;
+            color: var(--text-color);
+        }
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 12px 40px var(--shadow-color);
+        }
+        .card .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .card .text-muted {
+            color: var(--text-secondary);
+        }
+        .card .tag {
+            background: var(--tag-bg);
+            color: var(--text-secondary);
+        }
+
+        /* ===== 统一按钮 ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 22px;
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            background: var(--btn-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            user-select: none;
+            white-space: nowrap;
+            min-height: 38px;
+        }
+        .btn:hover {
+            transform: scale(1.06);
+            background: var(--btn-hover);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn-sm {
+            padding: 4px 16px;
+            font-size: 13px;
+            min-height: 30px;
+            border-radius: 30px;
+        }
+        .btn-primary {
+            background: rgba(122, 155, 170, 0.30);
+            border-color: rgba(122, 155, 170, 0.25);
+        }
+        .btn-primary:hover {
+            background: rgba(122, 155, 170, 0.55);
+        }
+        .btn-danger {
+            background: rgba(217, 122, 122, 0.30);
+            border-color: rgba(217, 122, 122, 0.25);
+        }
+        .btn-danger:hover {
+            background: rgba(217, 122, 122, 0.55);
+        }
+        .btn-success {
+            background: rgba(122, 170, 138, 0.30);
+            border-color: rgba(122, 170, 138, 0.25);
+        }
+        .btn-success:hover {
+            background: rgba(122, 170, 138, 0.55);
+        }
+        .btn-warning {
+            background: rgba(200, 180, 80, 0.30);
+            border-color: rgba(200, 180, 80, 0.25);
+        }
+        .btn-warning:hover {
+            background: rgba(200, 180, 80, 0.55);
+        }
+
+        .login-container .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        /* ===== 关于页 ===== */
+        .about-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            margin-bottom: 16px;
+        }
+
+        /* ===== 文章详情 ===== */
+        .post-actions {
+            margin-top: 34px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .zoom-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--btn-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: var(--text-color);
+            font-size: 24px;
+            line-height: 44px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+            margin-top: -8px;
+            margin-right: -12px;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+        .zoom-close:hover {
+            transform: scale(1.12);
+            background: var(--btn-hover);
+        }
+        .zoom-close:active {
+            transform: scale(0.92);
+        }
+        .post-detail {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 30px;
+        }
+        .post-detail .post-title {
+            color: var(--text-color);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            font-size: 42px;
+            line-height: 1.1;
+            margin-bottom: 18px;
+        }
+        .post-detail .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 26px;
+        }
+        .post-detail .post-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--tag-bg);
+            border-radius: 999px;
+        }
+        .post-detail .post-content {
+            color: var(--text-color);
+            line-height: 1.95;
+            font-size: 17px;
+        }
+        .post-detail .post-content p {
+            margin: 20px 0;
+        }
+        .post-detail .post-content img {
+            max-width: 100%;
+            border-radius: 14px;
+            margin: 24px 0;
+            display: block;
+        }
+        .post-detail .post-content pre {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 18px;
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+        .post-detail .post-content code {
+            background: var(--tag-bg);
+            color: #f8d7da;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .post-detail .post-content pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+            font-size: 0.9em;
+        }
+        .post-detail .post-content blockquote {
+            border-left-color: rgba(255, 255, 255, 0.3);
+            background: var(--tag-bg);
+            color: var(--text-secondary);
+            padding: 18px 20px;
+            margin: 24px 0;
+            border-radius: 14px;
+        }
+        .post-detail .post-content h1,
+        .post-detail .post-content h2,
+        .post-detail .post-content h3 {
+            color: var(--text-color);
+        }
+
+        /* ===== 管理后台 ===== */
+        .admin-list .post-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: transparent;
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+            transition: transform 0.2s;
+        }
+        .admin-list .post-item:hover {
+            transform: scale(1.01);
+            background: var(--tag-bg);
+        }
+        .admin-list .post-item .post-info {
+            flex: 1;
+            min-width: 160px;
+        }
+        .admin-list .post-item .post-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .admin-form input,
+        .admin-form textarea {
+            background: var(--input-bg);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 15px;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .admin-form input:focus,
+        .admin-form textarea:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .admin-form input::placeholder,
+        .admin-form textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+        .admin-form label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .form-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== 登录界面 ===== */
+        .login-container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 30px;
+            background: var(--login-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        .login-container input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .login-error {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .login-success {
+            color: #69db7c;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .admin-content {
+            display: none;
+        }
+        .admin-content.active {
+            display: block;
+        }
+
+        /* ===== 文章页：搜索 / 标签云 / 归档 ===== */
+        .posts-toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .posts-toolbar .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .posts-toolbar .search-box input {
+            flex: 1;
+            min-width: 180px;
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 15px;
+            backdrop-filter: blur(4px);
+            transition: border-color 0.2s;
+        }
+        .posts-toolbar .search-box input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .posts-toolbar .search-box input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 0;
+        }
+        .tag-cloud .tag-btn {
+            background: var(--tag-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 4px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .tag-cloud .tag-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .tag-cloud .tag-btn.active {
+            background: rgba(122, 155, 170, 0.35);
+            color: var(--text-color);
+            border-color: rgba(122, 155, 170, 0.4);
+        }
+
+        .archive-year {
+            margin-bottom: 24px;
+        }
+        .archive-year .year-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            cursor: pointer;
+            user-select: none;
+            transition: opacity 0.2s;
+        }
+        .archive-year .year-title:hover {
+            opacity: 0.7;
+        }
+        .archive-month {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+        .archive-month .month-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            cursor: pointer;
+            user-select: none;
+            transition: opacity 0.2s;
+        }
+        .archive-month .month-title:hover {
+            opacity: 0.7;
+        }
+        .archive-month .month-posts {
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .archive-month .month-posts .archive-post {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .archive-month .month-posts .archive-post:hover {
+            transform: translateX(4px);
+        }
+        .archive-month .month-posts .archive-post .post-title {
+            color: var(--text-color);
+        }
+        .archive-month .month-posts .archive-post .post-date {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        /* ===== 🆕 文件云盘样式 ===== */
+        .file-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s, background 0.3s;
+            background: var(--input-bg);
+            margin-bottom: 20px;
+        }
+        .file-upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: var(--tag-bg);
+        }
+        .file-upload-area.dragover {
+            border-color: rgba(122, 155, 170, 0.7);
+            background: rgba(122, 155, 170, 0.10);
+        }
+        .file-upload-area .icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .file-upload-area p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+        .file-upload-area .hint {
+            font-size: 13px;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .file-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .file-list-header .file-count {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            background: var(--file-item-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 8px;
+            transition: transform 0.2s, background 0.2s;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .file-item:hover {
+            transform: scale(1.01);
+            background: var(--tag-bg);
+        }
+        .file-item .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 150px;
+        }
+        .file-item .file-info .file-icon {
+            font-size: 28px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .file-item .file-info .file-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-color);
+            word-break: break-all;
+        }
+        .file-item .file-info .file-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+        .file-item .file-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .file-item .file-actions .btn {
+            padding: 4px 14px;
+            font-size: 13px;
+            min-height: 30px;
+        }
+        .file-item .file-actions .btn-download {
+            background: rgba(122, 155, 170, 0.20);
+            border-color: rgba(122, 155, 170, 0.20);
+        }
+        .file-item .file-actions .btn-download:hover {
+            background: rgba(122, 155, 170, 0.45);
+        }
+        .file-item .file-actions .btn-delete {
+            background: rgba(217, 122, 122, 0.20);
+            border-color: rgba(217, 122, 122, 0.20);
+        }
+        .file-item .file-actions .btn-delete:hover {
+            background: rgba(217, 122, 122, 0.45);
+        }
+
+        .upload-progress {
+            margin: 12px 0;
+            padding: 10px 16px;
+            background: var(--tag-bg);
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .upload-progress .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            min-width: 100px;
+        }
+        .upload-progress .progress-bar .fill {
+            height: 100%;
+            background: #7aaa8a;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .upload-progress .progress-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        /* ===== 加载 & 空状态 ===== */
+        .loading {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-secondary);
+        }
+        .loading::after {
+            content: "…";
+            animation: dots 1.2s steps(4, end) infinite;
+        }
+        @keyframes dots {
+            0% {
+                content: "";
+            }
+            25% {
+                content: ".";
+            }
+            50% {
+                content: "..";
+            }
+            75% {
+                content: "...";
+            }
+            100% {
+                content: "";
+            }
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* ===== 放大阅读模态框 ===== */
+        .zoom-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .zoom-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .zoom-content {
+            background: var(--zoom-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            max-width: 820px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 40px 50px;
+            box-shadow: 0 20px 60px var(--shadow-color);
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+            color: var(--text-color);
+        }
+        .zoom-overlay.active .zoom-content {
+            transform: scale(1);
+        }
+        .zoom-content .zoom-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            color: var(--text-color);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .zoom-content .zoom-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        .zoom-content .zoom-body {
+            font-size: 18px;
+            line-height: 2;
+            color: var(--text-color);
+        }
+        .zoom-content .zoom-body h1,
+        .zoom-content .zoom-body h2,
+        .zoom-content .zoom-body h3 {
+            color: var(--text-color);
+        }
+        .zoom-content .zoom-body code {
+            background: var(--tag-bg);
+            color: #f8d7da;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .zoom-content .zoom-body pre code {
+            background: transparent;
+        }
+        .zoom-content .zoom-body blockquote {
+            border-left-color: rgba(255, 255, 255, 0.3);
+            background: var(--tag-bg);
+            color: var(--text-secondary);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .home-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .hero h1 {
+                font-size: 38px;
+            }
+            .hero .avatar {
+                width: 90px;
+                height: 90px;
+            }
+            .home-footer {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .file-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .file-item .file-actions {
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .navbar {
+                top: 12px;
+                padding: 12px 20px;
+                border-radius: 40px;
+                width: calc(100% - 24px);
+            }
+            .navbar .brand {
+                font-size: 18px;
+            }
+            .navbar .nav-links {
+                gap: 14px;
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .hero .subtitle {
+                font-size: 15px;
+            }
+            .card {
+                padding: 20px 18px;
+            }
+            .post-card {
+                padding: 14px 16px;
+            }
+            .zoom-content {
+                padding: 24px 20px;
+            }
+            .zoom-content .zoom-title {
+                font-size: 26px;
+            }
+            .zoom-content .zoom-body {
+                font-size: 16px;
+            }
+            #page-about,
+            #page-admin,
+            #page-post,
+            #page-files {
+                padding-top: 100px;
+            }
+            #page-posts {
+                padding-top: 100px;
+            }
+            .login-container {
+                margin: 20px 10px;
+            }
+            .btn {
+                padding: 6px 16px;
+                font-size: 13px;
+                min-height: 34px;
+            }
+            .btn-sm {
+                padding: 3px 12px;
+                font-size: 12px;
+                min-height: 28px;
+            }
+            .about-link-card {
+                padding: 6px 16px;
+                font-size: 13px;
+                min-height: 34px;
+            }
+            .post-actions {
+                gap: 8px;
+            }
+            .post-actions .btn {
+                padding: 6px 14px;
+                font-size: 13px;
+            }
+            .admin-list .post-item .post-actions {
+                gap: 6px;
+            }
+            .admin-list .post-item .post-actions .btn {
+                padding: 4px 12px;
+                font-size: 12px;
+                min-height: 28px;
+            }
+            .posts-toolbar .search-box input {
+                font-size: 14px;
+                padding: 8px 14px;
+            }
+            .archive-month .month-posts .archive-post {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            .home-right .section-title {
+                font-size: 17px;
+            }
+            .home-footer .footer-card {
+                padding: 16px 18px;
+            }
+            .footer-stats {
+                gap: 10px 16px;
+            }
+            .footer-stats .stat-item {
+                font-size: 13px;
+            }
+            .footer-stats .stat-item .num {
+                font-size: 16px;
+            }
+            .file-upload-area {
+                padding: 24px 16px;
+            }
+            .file-upload-area .icon {
+                font-size: 36px;
+            }
+            .file-item .file-info .file-icon {
+                font-size: 22px;
+            }
+            .file-item .file-info .file-name {
+                font-size: 14px;
+            }
+            .file-item .file-actions .btn {
+                font-size: 12px;
+                padding: 3px 12px;
+                min-height: 26px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 5px 12px;
+                font-size: 12px;
+                min-height: 30px;
+                border-radius: 30px;
+            }
+            .btn-sm {
+                padding: 2px 10px;
+                font-size: 11px;
+                min-height: 24px;
+            }
+            .about-link-card {
+                padding: 5px 12px;
+                font-size: 12px;
+                min-height: 30px;
+            }
+            .zoom-close {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+                line-height: 36px;
+            }
+            .hero .avatar {
+                width: 72px;
+                height: 72px;
+            }
+            .hero h1 {
+                font-size: 28px;
+            }
+            .hero .subtitle {
+                font-size: 14px;
+                min-height: 1.6em;
+            }
+            .post-card .post-title {
+                font-size: 16px;
+            }
+            .navbar .nav-links {
+                gap: 10px;
+            }
+            .navbar .nav-links a {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand"><span id="brandName">Usually的博客</span></div>
+        <div class="nav-links" id="navLinks">
+            <!-- 由 JavaScript 动态生成 -->
+        </div>
+    </nav>
+
+    <div class="container" id="main-container">
+
+        <!-- ========== 首页 ========== -->
+        <div id="page-home">
+            <div class="home-grid">
+                <section class="hero home-left">
+                    <div class="avatar">
+                        <img id="avatarImg" src="picture/head.jpg" alt="头像" />
+                    </div>
+                    <h1 id="authorName">Usually</h1>
+                    <div class="bio-text" id="authorBio">计算机小白;喜欢跑步;MTF;喜欢听歌;地区Online等级13</div>
+                    <div class="subtitle" id="typewriter"></div>
+                    <div class="about-links" id="socialLinks">
+                        <!-- 由 JavaScript 动态生成 -->
+                    </div>
+                </section>
+
+                <div class="home-right">
+                    <div class="post-section">
+                        <div class="section-title">
+                            最近文章:
+                            <span class="badge" id="recentBadge">加载中</span>
+                        </div>
+                        <div id="post-list">
+                            <div class="loading">加载文章列表</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部模块 -->
+            <div class="home-footer" id="homeFooter">
+                <div class="footer-card">
+                    <div class="card-title"><span class="emoji">📊</span>站点统计</div>
+                    <div class="footer-stats" id="footerStats">
+                        <div class="stat-item" id="statPostsLabel">📝文章 <span class="num" id="statPosts">0</span></div>
+                        <div class="stat-item" id="statTagsLabel">🏷️标签 <span class="num" id="statTags">0</span></div>
+                        <div class="stat-item" id="statViewsLabel">👁️浏览量 <span class="num" id="statViews">0</span></div>
+                    </div>
+                </div>
+
+                <div class="footer-card">
+                    <div class="card-title"><span class="emoji">🏷️标签集</span></div>
+                    <div class="footer-tags" id="footerTags">
+                        <span style="color:var(--text-secondary);font-size:14px;">加载中...</span>
+                    </div>
+                </div>
+
+                <div class="footer-card">
+                    <div class="card-title"><span class="emoji">🔗</span>其它链接:</div>
+                    <div class="footer-links" id="footerLinks">
+                        <!-- 由 JavaScript 动态生成 -->
+                    </div>
+                </div>
+
+                <div class="footer-card">
+                    <div class="card-title"><span class="emoji">ℹ️</span>关于本站</div>
+                    <p id="footerCopyright" style="color:var(--text-secondary);font-size:14px;line-height:1.8;"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 关于 ========== -->
+        <div id="page-about" class="page-container hidden">
+            <div class="card">
+                <h2 class="page-title" id="aboutTitle">关于我</h2>
+                <div id="aboutContent" style="color:var(--text-secondary);margin-bottom:16px;font-size:15px;"></div>
+                <div class="about-links" id="aboutSocialLinks">
+                    <!-- 由 JavaScript 动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 文章 ========== -->
+        <div id="page-posts" class="page-container hidden">
+            <div class="card">
+                <h2 class="page-title" id="postsTitle">📚 文章归档</h2>
+                <div class="posts-toolbar">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="🔍 搜索文章..." />
+                        <button class="btn btn-sm" id="clearSearchBtn">清除</button>
+                    </div>
+                    <div id="tagCloud" class="tag-cloud"></div>
+                </div>
+                <div id="archiveContainer"></div>
+                <div id="filteredPosts" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 文件云盘 ========== -->
+        <div id="page-files" class="page-container hidden">
+            <div class="card">
+                <h2 class="page-title" id="filesTitle">📁 文件云盘</h2>
+                <p id="filesDesc" style="color:var(--text-secondary);margin-bottom:16px;font-size:15px;"></p>
+
+                <div class="file-upload-area" id="uploadArea">
+                    <span class="icon">📤</span>
+                    <p id="uploadText">点击选择文件 或 拖拽文件到此处</p>
+                    <span class="hint" id="uploadHint">支持多文件上传，单个文件最大 100MB</span>
+                    <input type="file" id="fileInput" multiple />
+                </div>
+
+                <div class="upload-progress" id="uploadProgress">
+                    <span class="progress-text" id="progressText">上传中 0%</span>
+                    <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+                </div>
+
+                <div class="file-list-header">
+                    <span class="file-count" id="fileCount">共 0 个文件</span>
+                    <button class="btn btn-sm btn-danger" id="refreshFilesBtn">🔄 刷新</button>
+                </div>
+                <div id="fileList">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 管理 ========== -->
+        <div id="page-admin" class="page-container hidden">
+            <div id="loginArea" class="login-container">
+                <h2 id="loginTitle">🔐 管理后台登录</h2>
+                <input type="password" id="loginPassword" placeholder="请输入密码" />
+                <button id="loginBtn" class="btn btn-primary">登录</button>
+                <div id="loginMessage" class="login-error"></div>
+            </div>
+
+            <div id="adminContent" class="admin-content">
+                <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">登出</button>
+                </div>
+                <div class="card admin-form" id="admin-form">
+                    <h2 id="form-title" style="color:var(--text-color);">造篇新的</h2>
+                    <form id="post-form">
+                        <label for="post-title" id="labelTitle">标题 *</label>
+                        <input type="text" id="post-title" placeholder="输入文章标题" required />
+                        <label for="post-summary" id="labelSummary">摘要 (可选)</label>
+                        <input type="text" id="post-summary" placeholder="简短摘要" />
+                        <label for="post-tags" id="labelTags">标签 (空格分隔)</label>
+                        <input type="text" id="post-tags" placeholder="例如： 技术 生活 随笔" />
+                        <label for="post-content" id="labelContent">内容 (Markdown) *</label>
+                        <div style="margin: 12px 0;">
+                            <label id="labelImageUpload" style="color:var(--text-secondary);">插入图片（可多选）</label>
+                            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                                <input type="file" id="imageInput" accept="image/*" multiple style="background:var(--input-bg); border:1px solid var(--border-color); border-radius:8px; padding:6px 10px; color:var(--text-color); width:auto;" />
+                                <button type="button" id="uploadBtn" class="btn btn-primary">上传并插入</button>
+                                <span id="uploadStatus" style="color:var(--text-secondary); font-size:14px;"></span>
+                            </div>
+                        </div>
+                        <textarea id="post-content" placeholder="使用 Markdown 书写…"></textarea>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-success" id="submit-btn">OK🆗</button>
+                            <button type="button" class="btn hidden" id="cancel-btn">取消编辑</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2 id="allPostsTitle" style="font-size:18px; font-weight:500; color:var(--text-color); margin-bottom:16px;">所有文章:</h2>
+                    <div id="admin-list" class="admin-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 文章详情 ========== -->
+        <div id="page-post" class="page-container hidden">
+            <div class="card post-detail" id="post-detail-content">
+                <!-- 动态填充 -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== 放大阅读模态框 ===== -->
+    <div id="zoomOverlay" class="zoom-overlay">
+        <div class="zoom-content">
+            <button class="zoom-close" id="zoomCloseBtn">✕</button>
+            <div id="zoomTitle" class="zoom-title"></div>
+            <div id="zoomMeta" class="zoom-meta"></div>
+            <div id="zoomBody" class="zoom-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  🆕 从配置加载数据
+        // ============================================================
+        const C = window.BLOG_CONFIG || {};
+
+        // ----- 网站基本信息 -----
+        if (C.site) {
+            document.title = C.site.title || 'Usually Blog';
+            document.getElementById('siteTitle').textContent = C.site.title || 'Usually Blog';
+            if (C.site.favicon) {
+                document.getElementById('siteFavicon').href = C.site.favicon;
+            }
+            if (C.site.brand) {
+                document.getElementById('brandName').textContent = C.site.brand;
+            }
+        }
+
+        // ----- 导航菜单 -----
+        if (C.nav && Array.isArray(C.nav)) {
+            const navContainer = document.getElementById('navLinks');
+            navContainer.innerHTML = C.nav.map(item =>
+                `<a data-page="${item.id}" class="${item.id === 'home' ? 'active' : ''}">${item.label}</a>`
+            ).join('');
+            navContainer.innerHTML += `<button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>`;
+        }
+
+        // ----- 个人信息 -----
+        if (C.author) {
+            document.getElementById('authorName').textContent = C.author.name || 'Usually';
+            document.getElementById('authorBio').textContent = C.author.bio || '';
+            if (C.author.avatar) {
+                document.getElementById('avatarImg').src = C.author.avatar;
+            }
+            // 座右铭
+            if (C.author.mottoes) {
+                window.MOTTOES = C.author.mottoes;
+            }
+            // 社交链接（首页）
+            if (C.author.social && Array.isArray(C.author.social)) {
+                const socialContainer = document.getElementById('socialLinks');
+                socialContainer.innerHTML = C.author.social.map(s =>
+                    `<a class="about-link-card about-link-${s.name.toLowerCase()}" href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.name}">${s.icon || s.name}</a>`
+                ).join('');
+            }
+            // 底部签名
+            if (C.author.scrollHint) {
+                const hintEl = document.querySelector('.hero .scroll-hint');
+                if (hintEl) hintEl.textContent = C.author.scrollHint;
+            }
+        }
+
+        // ----- 底部友链 -----
+        if (C.footer && C.footer.links) {
+            const linksContainer = document.getElementById('footerLinks');
+            linksContainer.innerHTML = C.footer.links.map(link =>
+                `<a class="link-btn" href="${link.url}" target="_blank">${link.name}</a>`
+            ).join('');
+        }
+        if (C.footer && C.footer.copyright) {
+            document.getElementById('footerCopyright').textContent = C.footer.copyright;
+        }
+        if (C.footer && C.footer.stats) {
+            const stats = C.footer.stats;
+            document.getElementById('statPostsLabel').innerHTML = `${stats.posts} <span class="num" id="statPosts">0</span>`;
+            document.getElementById('statTagsLabel').innerHTML = `${stats.tags} <span class="num" id="statTags">0</span>`;
+            document.getElementById('statViewsLabel').innerHTML = `${stats.views} <span class="num" id="statViews">0</span>`;
+        }
+
+        // ----- 关于页面 -----
+        if (C.about) {
+            document.getElementById('aboutTitle').textContent = C.about.title || '关于我';
+            if (C.about.content && Array.isArray(C.about.content)) {
+                document.getElementById('aboutContent').innerHTML = C.about.content.join('<br>');
+            }
+            if (C.about.social) {
+                const container = document.getElementById('aboutSocialLinks');
+                container.innerHTML = C.about.social.map(s =>
+                    `<a class="about-link-card about-link-${s.name.toLowerCase()}" href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.name}">${s.icon || s.name}</a>`
+                ).join('');
+            }
+        }
+
+        // ----- 文章页面 -----
+        if (C.postsPage) {
+            document.getElementById('postsTitle').textContent = C.postsPage.title || '📚 文章归档';
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.placeholder = C.postsPage.searchPlaceholder || '🔍 搜索文章...';
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (clearBtn) clearBtn.textContent = C.postsPage.clearBtn || '清除';
+        }
+
+        // ----- 文件云盘 -----
+        if (C.fileCloud) {
+            document.getElementById('filesTitle').textContent = C.fileCloud.title || '📁 文件云盘';
+            document.getElementById('filesDesc').textContent = C.fileCloud.description || '';
+            document.getElementById('uploadHint').textContent = C.fileCloud.uploadHint || '支持多文件上传，单个文件最大 100MB';
+        }
+
+        // ----- 管理后台 -----
+        if (C.admin) {
+            const a = C.admin;
+            document.getElementById('loginTitle').textContent = a.loginTitle || '🔐 管理后台登录';
+            document.getElementById('loginPassword').placeholder = a.loginPlaceholder || '请输入密码';
+            document.getElementById('loginBtn').textContent = a.loginBtn || '登录';
+            document.getElementById('logoutBtn').textContent = a.logoutBtn || '登出';
+            document.getElementById('form-title').textContent = a.newPostTitle || '造篇新的';
+            document.getElementById('submit-btn').textContent = a.submitBtn || 'OK🆗';
+            document.getElementById('cancel-btn').textContent = a.cancelBtn || '取消编辑';
+            document.getElementById('allPostsTitle').textContent = a.allPostsTitle || '所有文章:';
+            document.getElementById('labelTitle').textContent = a.postTitle || '标题 *';
+            document.getElementById('post-title').placeholder = a.postTitlePlaceholder || '输入文章标题';
+            document.getElementById('labelSummary').textContent = a.summary || '摘要 (可选)';
+            document.getElementById('post-summary').placeholder = a.summaryPlaceholder || '简短摘要';
+            document.getElementById('labelTags').textContent = a.tags || '标签 (空格分隔)';
+            document.getElementById('post-tags').placeholder = a.tagsPlaceholder || '例如： 技术 生活 随笔';
+            document.getElementById('labelContent').textContent = a.content || '内容 (Markdown) *';
+            document.getElementById('post-content').placeholder = a.contentPlaceholder || '使用 Markdown 书写…';
+            document.getElementById('labelImageUpload').textContent = a.imageUpload || '插入图片（可多选）';
+            document.getElementById('uploadBtn').textContent = a.uploadBtn || '上传并插入';
+        }
+
+        // ============================================================
+        //  以下为原有功能代码（保持不变，仅数据从配置读取）
+        // ============================================================
+
+        const API_BASE = '/api';
+        let authToken = localStorage.getItem('adminToken') || null;
+
+        // ----- 工具函数 -----
+        function formatDate(iso) {
+            if (!iso) return '未知时间';
+            const d = new Date(iso);
+            return d.toLocaleString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit',
+                minute: '2-digit' });
+        }
+
+        function formatDateShort(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        function renderMarkdown(text) {
+            if (!text) return '';
+            try { return marked.parse(text); } catch (_) { return text; }
+        }
+
+        // ----- API -----
+        async function apiFetch(path, options = {}) {
+            const headers = {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            };
+            if (authToken) {
+                headers['Authorization'] = 'Bearer ' + authToken;
+            }
+            const res = await fetch(API_BASE + path, {
+                ...options,
+                headers: headers,
+                body: options.body ? JSON.stringify(options.body) : undefined,
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                if (res.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    authToken = null;
+                    if (!document.getElementById('page-admin').classList.contains('hidden')) {
+                        checkAdminAuth();
+                    }
+                }
+                throw new Error(err.message || `请求失败 (${res.status})`);
+            }
+            return res.json();
+        }
+
+        // ----- 登录/登出 -----
+        async function login(password) {
+            const result = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password }),
+            });
+            const data = await result.json();
+            if (!result.ok) throw new Error(data.message || '登录失败');
+            authToken = data.token;
+            localStorage.setItem('adminToken', authToken);
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            authToken = null;
+            fetch('/api/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + (authToken || '') } }).catch(
+            () => {});
+            checkAdminAuth();
+        }
+
+        function checkAdminAuth() {
+            const loginArea = document.getElementById('loginArea');
+            const adminContent = document.getElementById('adminContent');
+            const loginMessage = document.getElementById('loginMessage');
+            if (authToken) {
+                loginArea.style.display = 'none';
+                adminContent.classList.add('active');
+                loadAdminList();
+                resetForm();
+            } else {
+                loginArea.style.display = 'block';
+                adminContent.classList.remove('active');
+                loginMessage.textContent = '';
+                document.getElementById('admin-list').innerHTML = '';
+            }
+        }
+
+        // ----- 页面切换 -----
+        const pages = {
+            home: document.getElementById('page-home'),
+            about: document.getElementById('page-about'),
+            posts: document.getElementById('page-posts'),
+            files: document.getElementById('page-files'),
+            admin: document.getElementById('page-admin'),
+            post: document.getElementById('page-post'),
+        };
+        const navLinks = document.querySelectorAll('.nav-links a[data-page]');
+
+        function showPage(pageName) {
+            Object.values(pages).forEach(el => el.classList.add('hidden'));
+            if (pages[pageName]) pages[pageName].classList.remove('hidden');
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.dataset.page === pageName);
+            });
+            if (pageName === 'home') loadHome();
+            if (pageName === 'posts') loadAllPosts();
+            if (pageName === 'files') loadFiles();
+            if (pageName === 'admin') {
+                checkAdminAuth();
+                if (authToken) { loadAdminList();
+                    resetForm(); }
+            }
+            if (pageName === 'home') pages.post.classList.add('hidden');
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.dataset.page;
+                showPage(page);
+                if (page === 'admin') checkAdminAuth();
+                if (page === 'home') pages.post.classList.add('hidden');
+            });
+        });
+
+        // ----- 主题切换 -----
+        const themeToggle = document.getElementById('themeToggle');
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', theme);
+            const hljsTheme = document.getElementById('hljs-theme');
+            if (hljsTheme) {
+                hljsTheme.href = theme === 'dark' ?
+                    'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css' :
+                    'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+            }
+        }
+        themeToggle.addEventListener('click', function() {
+            const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+            currentTheme = nextTheme;
+            applyTheme(currentTheme);
+        });
+        applyTheme(currentTheme);
+
+        // ----- 登录事件 -----
+        document.getElementById('loginBtn').addEventListener('click', async function() {
+            const password = document.getElementById('loginPassword').value;
+            const msgEl = document.getElementById('loginMessage');
+            if (!password) { msgEl.textContent = '请输入密码'; return; }
+            try {
+                await login(password);
+                msgEl.textContent = '';
+                document.getElementById('loginPassword').value = '';
+                checkAdminAuth();
+                loadAdminList();
+                resetForm();
+            } catch (error) {
+                msgEl.textContent = error.message;
+            }
+        });
+        document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') document.getElementById('loginBtn').click();
+        });
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // ============================================================
+        //  打字机效果（从配置读取座右铭）
+        // ============================================================
+        const mottoes = window.MOTTOES || [
+            '代码改变世界，文字温暖人心。',
+            'Stay hungry, stay foolish.',
+            '写博客是为了更好地思考。',
+            '在技术的海洋里，做个快乐的拾贝人。',
+        ];
+        let mottoIndex = 0,
+            charIndex = 0,
+            isDeleting = false;
+        const typewriterEl = document.getElementById('typewriter');
+
+        function typeEffect() {
+            const current = mottoes[mottoIndex];
+            if (!isDeleting) {
+                typewriterEl.innerHTML = current.substring(0, charIndex + 1) +
+                '<span class="typewriter-cursor"></span>';
+                charIndex++;
+                if (charIndex === current.length) {
+                    isDeleting = true;
+                    setTimeout(typeEffect, 3000);
+                    return;
+                }
+                setTimeout(typeEffect, 80 + Math.random() * 40);
+            } else {
+                typewriterEl.innerHTML = current.substring(0, charIndex) + '<span class="typewriter-cursor"></span>';
+                charIndex--;
+                if (charIndex < 0) {
+                    isDeleting = false;
+                    charIndex = 0;
+                    mottoIndex = (mottoIndex + 1) % mottoes.length;
+                    setTimeout(typeEffect, 500);
+                    return;
+                }
+                setTimeout(typeEffect, 40 + Math.random() * 30);
+            }
+        }
+        setTimeout(typeEffect, 500);
+
+        // ============================================================
+        //  首页加载
+        // ============================================================
+        async function loadHome() {
+            const listEl = document.getElementById('post-list');
+            const recentBadge = document.getElementById('recentBadge');
+            const statPosts = document.getElementById('statPosts');
+            const statTags = document.getElementById('statTags');
+            const statViews = document.getElementById('statViews');
+            const footerTags = document.getElementById('footerTags');
+
+            listEl.innerHTML = `<div class="loading">加载文章列表</div>`;
+            footerTags.innerHTML = '<span style="color:var(--text-secondary);font-size:14px;">加载中...</span>';
+
+            try {
+                const posts = await apiFetch('/posts');
+                if (!posts || posts.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📭</div>
+                            <p>还没有文章，去 <a href="#" onclick="showPage('admin'); return false;" style="color:var(--text-secondary);text-decoration:underline;">管理后台</a> 写一篇吧！</p>
+                        </div>
+                    `;
+                    recentBadge.textContent = '0 篇';
+                    statPosts.textContent = '0';
+                    statTags.textContent = '0';
+                    statViews.textContent = '0';
+                    footerTags.innerHTML = '<span style="color:var(--text-secondary);font-size:14px;">暂无标签</span>';
+                    return;
+                }
+
+                const sorted = [...posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const totalPosts = sorted.length;
+                const allTags = new Set();
+                let totalViews = 0;
+                sorted.forEach(p => {
+                    (p.tags || []).forEach(t => allTags.add(t));
+                    totalViews += (p.views || 0);
+                });
+                const totalTags = allTags.size;
+
+                statPosts.textContent = totalPosts;
+                statTags.textContent = totalTags;
+                statViews.textContent = totalViews;
+
+                const recentCount = Math.min(5, totalPosts);
+                const recentPosts = sorted.slice(0, recentCount);
+                recentBadge.textContent = `${recentCount} 篇`;
+
+                let recentHtml = '';
+                recentPosts.forEach(p => {
+                    const tags = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+                    recentHtml += `
+                        <div class="post-card" onclick="showPost('${p.id}')">
+                            <div class="post-title">${p.title || '无标题'}</div>
+                            <div class="post-meta">
+                                <span>📅 ${formatDate(p.createdAt)}</span>
+                                ${tags ? `<span>🏷️ ${tags}</span>` : ''}
+                            </div>
+                            ${p.summary ? `<div class="post-summary">${p.summary}</div>` : ''}
+                        </div>
+                    `;
+                });
+                listEl.innerHTML = recentHtml;
+
+                const tagCounts = {};
+                sorted.forEach(p => {
+                    (p.tags || []).forEach(t => {
+                        tagCounts[t] = (tagCounts[t] || 0) + 1;
+                    });
+                });
+                const sortedTags = Object.entries(tagCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10);
+
+                if (sortedTags.length === 0) {
+                    footerTags.innerHTML = '<span style="color:var(--text-secondary);font-size:14px;">暂无标签</span>';
+                } else {
+                    footerTags.innerHTML = sortedTags.map(([tag, count]) =>
+                        `<span class="tag-btn" onclick="showPage('posts'); setTimeout(() => { document.getElementById('searchInput').value = '${tag}'; document.getElementById('searchInput').dispatchEvent(new Event('input')); }, 300);">${tag} (${count})</span>`
+                    ).join('');
+                }
+
+            } catch (err) {
+                listEl.innerHTML = `<p style="color:rgba(255,200,200,0.9);">⚠️ 加载失败：${err.message}</p>`;
+                recentBadge.textContent = '❌';
+                statPosts.textContent = '?';
+                statTags.textContent = '?';
+                statViews.textContent = '?';
+                footerTags.innerHTML = '<span style="color:rgba(255,200,200,0.7);">加载失败</span>';
+            }
+        }
+
+        // ============================================================
+        //  文章页
+        // ============================================================
+        let allPostsData = [];
+        let activeTag = null;
+        let searchQuery = '';
+
+        async function loadAllPosts() {
+            const container = document.getElementById('archiveContainer');
+            const filteredContainer = document.getElementById('filteredPosts');
+            container.innerHTML = `<div class="loading">加载中</div>`;
+            filteredContainer.style.display = 'none';
+
+            try {
+                const posts = await apiFetch('/posts');
+                allPostsData = posts || [];
+                renderTagCloud(allPostsData);
+                renderArchive(allPostsData);
+            } catch (err) {
+                container.innerHTML = `<p style="color:rgba(255,200,200,0.9);">⚠️ 加载失败：${err.message}</p>`;
+            }
+        }
+
+        function renderTagCloud(posts) {
+            const tagMap = {};
+            posts.forEach(p => {
+                (p.tags || []).forEach(tag => {
+                    tagMap[tag] = (tagMap[tag] || 0) + 1;
+                });
+            });
+            const tags = Object.keys(tagMap).sort();
+            const cloud = document.getElementById('tagCloud');
+            if (tags.length === 0) {
+                cloud.innerHTML = '<span style="color:var(--text-secondary);font-size:14px;">暂无标签</span>';
+                return;
+            }
+            cloud.innerHTML = tags.map(tag =>
+                `<button class="tag-btn ${activeTag === tag ? 'active' : ''}" data-tag="${tag}">${tag} (${tagMap[tag]})</button>`
+            ).join('');
+
+            cloud.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tag = this.dataset.tag;
+                    activeTag = (activeTag === tag) ? null : tag;
+                    applyFilters();
+                });
+            });
+        }
+
+        function renderArchive(posts) {
+            const container = document.getElementById('archiveContainer');
+            const sorted = [...posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            if (sorted.length === 0) {
+                container.innerHTML =
+                `<div class="empty-state"><div class="icon">📭</div><p>还没有文章。</p></div>`;
+                return;
+            }
+
+            const groups = {};
+            sorted.forEach(p => {
+                const d = new Date(p.createdAt);
+                const year = d.getFullYear();
+                const month = d.getMonth() + 1;
+                if (!groups[year]) groups[year] = {};
+                if (!groups[year][month]) groups[year][month] = [];
+                groups[year][month].push(p);
+            });
+
+            let html = '';
+            const years = Object.keys(groups).sort((a, b) => b - a);
+            years.forEach(year => {
+                html += `<div class="archive-year"><div class="year-title">📅 ${year}</div>`;
+                const months = Object.keys(groups[year]).sort((a, b) => b - a);
+                months.forEach(month => {
+                    html += `<div class="archive-month"><div class="month-title">${year}-${String(month).padStart(2,'0')}</div>`;
+                    html += `<div class="month-posts">`;
+                    groups[year][month].forEach(p => {
+                        html += `
+                            <div class="archive-post" onclick="showPost('${p.id}')">
+                                <span class="post-title">${p.title || '无标题'}</span>
+                                <span class="post-date">${formatDateShort(p.createdAt)}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                });
+                html += `</div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function applyFilters() {
+            let filtered = allPostsData;
+            if (searchQuery.trim()) {
+                const q = searchQuery.trim().toLowerCase();
+                filtered = filtered.filter(p =>
+                    (p.title || '').toLowerCase().includes(q) ||
+                    (p.summary || '').toLowerCase().includes(q) ||
+                    (p.content || '').toLowerCase().includes(q)
+                );
+            }
+            if (activeTag) {
+                filtered = filtered.filter(p => (p.tags || []).includes(activeTag));
+            }
+
+            const container = document.getElementById('archiveContainer');
+            const filteredContainer = document.getElementById('filteredPosts');
+
+            if (searchQuery.trim() || activeTag) {
+                container.style.display = 'none';
+                filteredContainer.style.display = 'block';
+                if (filtered.length === 0) {
+                    filteredContainer.innerHTML =
+                        `<div class="empty-state"><div class="icon">🔍</div><p>没有匹配的文章。</p></div>`;
+                } else {
+                    let html = `<div style="margin-bottom:12px;color:var(--text-secondary);">找到 ${filtered.length} 篇文章</div>`;
+                    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(p => {
+                        const tags = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+                        html += `
+                            <div class="post-card" onclick="showPost('${p.id}')" style="margin-bottom:12px;">
+                                <div class="post-title">${p.title || '无标题'}</div>
+                                <div class="post-meta">
+                                    <span>📅 ${formatDate(p.createdAt)}</span>
+                                    ${tags ? `<span>🏷️ ${tags}</span>` : ''}
+                                </div>
+                                ${p.summary ? `<div class="post-summary">${p.summary}</div>` : ''}
+                            </div>
+                        `;
+                    });
+                    filteredContainer.innerHTML = html;
+                }
+            } else {
+                container.style.display = 'block';
+                filteredContainer.style.display = 'none';
+            }
+
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tag === activeTag);
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            searchQuery = this.value;
+            applyFilters();
+        });
+        document.getElementById('clearSearchBtn').addEventListener('click', function() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            activeTag = null;
+            applyFilters();
+        });
+
+        // ============================================================
+        //  🆕 文件云盘功能
+        // ============================================================
+        async function loadFiles() {
+            const listEl = document.getElementById('fileList');
+            const countEl = document.getElementById('fileCount');
+            listEl.innerHTML = `<div class="loading">加载文件列表...</div>`;
+
+            try {
+                const response = await fetch('/api/files');
+                if (!response.ok) throw new Error('加载失败');
+                const files = await response.json();
+
+                countEl.textContent = `共 ${files.length} 个文件`;
+
+                if (files.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📂</div>
+                            <p>还没有文件，上传一个吧！</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                files.forEach(file => {
+                    const icon = getFileIcon(file.name);
+                    const date = new Date(file.uploadedAt);
+                    const dateStr = date.toLocaleString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit' });
+                    html += `
+                        <div class="file-item">
+                            <div class="file-info">
+                                <span class="file-icon">${icon}</span>
+                                <div>
+                                    <div class="file-name">${escapeHtml(file.name)}</div>
+                                    <div class="file-meta">
+                                        <span>📦 ${file.sizeFormatted}</span>
+                                        <span>📅 ${dateStr}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <a href="/api/files/${encodeURIComponent(file.name)}" class="btn btn-download" download>⬇️ 下载</a>
+                                <button class="btn btn-delete" onclick="deleteFile('${encodeURIComponent(file.name)}')">🗑️ 删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                listEl.innerHTML = html;
+
+            } catch (err) {
+                listEl.innerHTML = `<p style="color:rgba(255,200,200,0.9);">⚠️ 加载失败：${err.message}</p>`;
+            }
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                pdf: '📄',
+                doc: '📝',
+                docx: '📝',
+                xls: '📊',
+                xlsx: '📊',
+                ppt: '📽️',
+                pptx: '📽️',
+                zip: '📦',
+                rar: '📦',
+                '7z': '📦',
+                tar: '📦',
+                gz: '📦',
+                mp3: '🎵',
+                wav: '🎵',
+                flac: '🎵',
+                mp4: '🎬',
+                avi: '🎬',
+                mov: '🎬',
+                mkv: '🎬',
+                jpg: '🖼️',
+                jpeg: '🖼️',
+                png: '🖼️',
+                gif: '🖼️',
+                webp: '🖼️',
+                svg: '🖼️',
+                txt: '📃',
+                md: '📃',
+                json: '📃',
+                xml: '📃',
+                html: '🌐',
+                css: '🎨',
+                js: '⚡',
+                py: '🐍',
+                java: '☕',
+                c: '🔧',
+                cpp: '🔧',
+                h: '🔧',
+                go: '🐹',
+                rs: '🦀',
+                exe: '⚙️',
+                dmg: '💿',
+                iso: '💿',
+            };
+            return icons[ext] || '📎';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ----- 文件上传 -----
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        uploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                uploadFiles();
+            }
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                uploadFiles();
+            }
+        });
+
+        async function uploadFiles() {
+            const files = fileInput.files;
+            if (files.length === 0) return;
+
+            if (!authToken) {
+                alert('请先登录管理后台再进行文件操作');
+                return;
+            }
+
+            uploadProgress.style.display = 'flex';
+            const total = files.length;
+            let uploaded = 0;
+
+            for (let i = 0; i < total; i++) {
+                const file = files[i];
+                const formData = new FormData();
+                formData.append('files', file);
+
+                try {
+                    const response = await fetch('/api/files/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + authToken,
+                        },
+                        body: formData,
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || '上传失败');
+                    uploaded++;
+                    const percent = Math.round((uploaded / total) * 100);
+                    progressFill.style.width = percent + '%';
+                    progressText.textContent = `上传中 ${percent}% (${uploaded}/${total})`;
+                } catch (error) {
+                    progressText.textContent = `❌ 第 ${i+1} 个文件上传失败：${error.message}`;
+                    setTimeout(() => {
+                        uploadProgress.style.display = 'none';
+                        progressFill.style.width = '0%';
+                    }, 3000);
+                    return;
+                }
+            }
+
+            progressText.textContent = `✅ 成功上传 ${uploaded} 个文件！`;
+            setTimeout(() => {
+                uploadProgress.style.display = 'none';
+                progressFill.style.width = '0%';
+                fileInput.value = '';
+                loadFiles();
+            }, 1500);
+        }
+
+        // ----- 文件删除 -----
+        window.deleteFile = async function(filename) {
+            if (!authToken) {
+                alert('请先登录管理后台');
+                return;
+            }
+            if (!confirm(`确定要删除文件 "${filename}" 吗？`)) return;
+
+            try {
+                const response = await fetch(`/api/files/${filename}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + authToken,
+                    },
+                });
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.message || '删除失败');
+                }
+                alert('✅ 文件已删除');
+                loadFiles();
+            } catch (error) {
+                alert('❌ 删除失败：' + error.message);
+            }
+        };
+
+        document.getElementById('refreshFilesBtn').addEventListener('click', function() {
+            loadFiles();
+        });
+
+        // ============================================================
+        //  文章详情（含阅读数 + 代码高亮）
+        // ============================================================
+        async function showPost(id) {
+            const detailEl = document.getElementById('post-detail-content');
+            detailEl.innerHTML = `<div class="loading">加载文章</div>`;
+            Object.values(pages).forEach(el => el.classList.add('hidden'));
+            pages.post.classList.remove('hidden');
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            try {
+                const post = await apiFetch(`/posts/${id}`);
+                if (!post) {
+                    detailEl.innerHTML =
+                        `<p>⚠️ 文章不存在或已被删除。</p><button class="btn" onclick="showPage('home')">← 返回首页</button>`;
+                    return;
+                }
+
+                fetch(`${API_BASE}/posts/${id}/views`, { method: 'POST' }).catch(() => {});
+                let views = 0;
+                try {
+                    const viewRes = await fetch(`${API_BASE}/posts/${id}/views`);
+                    const viewData = await viewRes.json();
+                    views = viewData.views || 0;
+                } catch (_) {}
+
+                const tags = (post.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+                const contentHtml = renderMarkdown(post.content || '');
+                detailEl.innerHTML = `
+                    <h1 class="post-title">${post.title || '无标题'}</h1>
+                    <div class="post-meta">
+                        <span>📅 ${formatDate(post.createdAt)}</span>
+                        ${post.updatedAt && post.updatedAt !== post.createdAt ? `<span>✏️ 更新于 ${formatDate(post.updatedAt)}</span>` : ''}
+                        ${tags ? `<span>🏷️ ${tags}</span>` : ''}
+                        <span>👁️ ${views} 次阅读</span>
+                    </div>
+                    <div class="post-content">${contentHtml}</div>
+                    <div class="post-actions">
+                        <button class="btn" onclick="showPage('home')">← 返回首页</button>
+                        <button class="btn btn-primary" onclick="editPostFromDetail('${post.id}')">✏️ 编辑</button>
+                        <button class="btn btn-success" onclick="openZoom(${JSON.stringify(post).replace(/"/g, '&quot;')})">🔍 放大阅读</button>
+                    </div>
+                `;
+
+                if (typeof hljs !== 'undefined') {
+                    detailEl.querySelectorAll('pre code').forEach(block => {
+                        hljs.highlightElement(block);
+                    });
+                }
+
+            } catch (err) {
+                detailEl.innerHTML =
+                    `<p style="color:rgba(255,200,200,0.9);">⚠️ 加载失败：${err.message}</p><button class="btn" onclick="showPage('home')">← 返回首页</button>`;
+            }
+        }
+
+        // ============================================================
+        //  放大阅读
+        // ============================================================
+        function openZoom(post) {
+            const tags = (post.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+            zoomTitle.textContent = post.title || '无标题';
+            zoomMeta.innerHTML = `
+                <span>📅 ${formatDate(post.createdAt)}</span>
+                ${post.updatedAt && post.updatedAt !== post.createdAt ? `<span>✏️ 更新于 ${formatDate(post.updatedAt)}</span>` : ''}
+                ${tags ? `<span>🏷️ ${tags}</span>` : ''}
+            `;
+            zoomBody.innerHTML = renderMarkdown(post.content || '');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            if (typeof hljs !== 'undefined') {
+                zoomBody.querySelectorAll('pre code').forEach(block => {
+                    hljs.highlightElement(block);
+                });
+            }
+        }
+
+        function editPostFromDetail(id) {
+            showPage('admin');
+            setTimeout(() => {
+                if (!authToken) { alert('请先登录管理后台'); return; }
+                const items = document.querySelectorAll('#admin-list .post-item');
+                let found = false;
+                items.forEach(item => {
+                    if (item.dataset.id === id) {
+                        const btn = item.querySelector('.btn-primary');
+                        if (btn) btn.click();
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    loadAdminList().then(() => {
+                        setTimeout(() => {
+                            document.querySelectorAll('#admin-list .post-item').forEach(item => {
+                                if (item.dataset.id === id) {
+                                    const btn = item.querySelector('.btn-primary');
+                                    if (btn) btn.click();
+                                }
+                            });
+                        }, 200);
+                    });
+                }
+            }, 300);
+        }
+
+        const overlay = document.getElementById('zoomOverlay');
+        const zoomTitle = document.getElementById('zoomTitle');
+        const zoomMeta = document.getElementById('zoomMeta');
+        const zoomBody = document.getElementById('zoomBody');
+        const zoomClose = document.getElementById('zoomCloseBtn');
+
+        function closeZoom() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) closeZoom(); });
+        zoomClose.addEventListener('click', closeZoom);
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && overlay.classList.contains('active'))
+                closeZoom(); });
+
+        // ============================================================
+        //  管理后台
+        // ============================================================
+        let posts = [];
+        let editingId = null;
+        const form = document.getElementById('post-form');
+        const titleInput = document.getElementById('post-title');
+        const summaryInput = document.getElementById('post-summary');
+        const tagsInput = document.getElementById('post-tags');
+        const contentInput = document.getElementById('post-content');
+        const formTitle = document.getElementById('form-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const adminListEl = document.getElementById('admin-list');
+
+        async function loadAdminList() {
+            if (!authToken) return;
+            try {
+                posts = await apiFetch('/posts');
+                renderAdminList();
+            } catch (err) {
+                adminListEl.innerHTML = `<p style="color:rgba(255,200,200,0.9);">⚠️ 加载列表失败：${err.message}</p>`;
+            }
+        }
+
+        function renderAdminList() {
+            if (!posts || posts.length === 0) {
+                adminListEl.innerHTML =
+                    `<div class="empty-state" style="padding:20px 0;"><div class="icon">📝</div><p>还没有文章，开始写第一篇吧！</p></div>`;
+                return;
+            }
+            const sorted = [...posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            let html = '';
+            sorted.forEach(p => {
+                html += `
+                    <div class="post-item" data-id="${p.id}">
+                        <div class="post-info">
+                            <div style="font-weight:500;color:var(--text-color);">${p.title || '无标题'}</div>
+                            <div class="text-muted text-small">📅 ${formatDate(p.createdAt)}</div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="btn btn-primary btn-sm" onclick="editPost('${p.id}')">✏️ 编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">🗑️ 删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            adminListEl.innerHTML = html;
+        }
+
+        function editPost(id) {
+            if (!authToken) { alert('请先登录'); return; }
+            const post = posts.find(p => String(p.id) === String(id));
+            if (!post) { alert('文章不存在'); return; }
+            editingId = post.id;
+            titleInput.value = post.title || '';
+            summaryInput.value = post.summary || '';
+            tagsInput.value = (post.tags || []).join(' ');
+            contentInput.value = post.content || '';
+            formTitle.textContent = '✏️ 编辑文章';
+            submitBtn.textContent = '💾 更新文章';
+            cancelBtn.classList.remove('hidden');
+            document.getElementById('admin-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function resetForm() {
+            editingId = null;
+            titleInput.value = '';
+            summaryInput.value = '';
+            tagsInput.value = '';
+            contentInput.value = '';
+            formTitle.textContent = '造篇新的';
+            submitBtn.textContent = 'OK🆗';
+            cancelBtn.classList.add('hidden');
+        }
+
+        async function savePost(e) {
+            e.preventDefault();
+            if (!authToken) { alert('请先登录'); return; }
+            const title = titleInput.value.trim();
+            const summary = summaryInput.value.trim();
+            const tags = tagsInput.value.split(/\s+/).filter(Boolean);
+            const content = contentInput.value;
+            if (!title) { alert('请填写文章标题'); return; }
+            if (!content) { alert('请填写文章内容'); return; }
+            const data = { title, summary, tags, content };
+            try {
+                if (editingId) {
+                    const updated = await apiFetch(`/posts/${editingId}`, { method: 'PUT', body: data });
+                    const idx = posts.findIndex(p => String(p.id) === String(editingId));
+                    if (idx !== -1) posts[idx] = updated;
+                    else posts.push(updated);
+                    alert('✅ 文章已更新！');
+                } else {
+                    const created = await apiFetch('/posts', { method: 'POST', body: data });
+                    posts.push(created);
+                    alert('🎉 文章发布成功！');
+                }
+                renderAdminList();
+                resetForm();
+                if (!document.getElementById('page-home').classList.contains('hidden')) loadHome();
+                if (!document.getElementById('page-posts').classList.contains('hidden')) loadAllPosts();
+            } catch (err) {
+                alert('⚠️ 保存失败：' + err.message);
+            }
+        }
+
+        async function deletePost(id) {
+            if (!authToken) { alert('请先登录'); return; }
+            if (!confirm('确定删除？')) return;
+            try {
+                await apiFetch(`/posts/${id}`, { method: 'DELETE' });
+                posts = posts.filter(p => String(p.id) !== String(id));
+                renderAdminList();
+                if (String(editingId) === String(id)) resetForm();
+                alert('🗑️ 已删除');
+                if (!document.getElementById('page-home').classList.contains('hidden')) loadHome();
+                if (!document.getElementById('page-posts').classList.contains('hidden')) loadAllPosts();
+            } catch (err) {
+                alert('⚠️ 删除失败：' + err.message);
+            }
+        }
+
+        // ----- 多图上传 -----
+        const imageInput = document.getElementById('imageInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadStatus = document.getElementById('uploadStatus');
+
+        uploadBtn.addEventListener('click', async function() {
+            if (!authToken) { alert('请先登录'); return; }
+            const files = imageInput.files;
+            if (!files || files.length === 0) {
+                uploadStatus.textContent = '⚠️ 请先选择图片';
+                return;
+            }
+            uploadBtn.disabled = true;
+            const total = files.length;
+            const imageUrls = [];
+
+            for (let i = 0; i < total; i++) {
+                const file = files[i];
+                uploadStatus.textContent = `⏳ 上传中 (${i+1}/${total})...`;
+                const formData = new FormData();
+                formData.append('image', file);
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + authToken },
+                        body: formData,
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || '上传失败');
+                    imageUrls.push(result.url);
+                } catch (error) {
+                    uploadStatus.textContent = `❌ 第 ${i+1} 张上传失败：${error.message}`;
+                    uploadBtn.disabled = false;
+                    return;
+                }
+            }
+
+            if (imageUrls.length > 0) {
+                const markdownImages = imageUrls.map(url => `![图片](${url})`).join('\n');
+                const textarea = document.getElementById('post-content');
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const insertText = `\n${markdownImages}\n`;
+                textarea.value = textarea.value.substring(0, start) + insertText + textarea.value.substring(end);
+                const newPos = start + insertText.length;
+                textarea.selectionStart = textarea.selectionEnd = newPos;
+                textarea.focus();
+                uploadStatus.textContent = `✅ 成功插入 ${imageUrls.length} 张图片！`;
+                imageInput.value = '';
+            } else {
+                uploadStatus.textContent = '⚠️ 没有图片被插入';
+            }
+            uploadBtn.disabled = false;
+        });
+
+        // 暴露全局
+        window.showPage = showPage;
+        window.showPost = showPost;
+        window.editPost = editPost;
+        window.deletePost = deletePost;
+        window.resetForm = resetForm;
+        window.editPostFromDetail = editPostFromDetail;
+        window.openZoom = openZoom;
+        window.closeZoom = closeZoom;
+        window.loadFiles = loadFiles;
+        window.deleteFile = deleteFile;
+
+        form.addEventListener('submit', savePost);
+        cancelBtn.addEventListener('click', resetForm);
+
+        // ----- 启动 -----
+        showPage('home');
+        loadHome();
+        checkAdminAuth();
+
+        console.log('✅ 博客已启动，模板化完成！');
+    </script>
+</body>
+</html>
